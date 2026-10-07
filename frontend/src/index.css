@@ -1,0 +1,6 @@
+@import "tailwindcss";
+@theme{--font-sans:'Manrope',system-ui,sans-serif;
+--color-sky-50:#f3f6ff;--color-sky-100:#e3ebff;--color-sky-200:#c5d6fb;--color-sky-400:#7ea2ee;--color-sky-500:#5b86e5;--color-sky-600:#3f69cc;
+--color-ink:#1d2340;--color-ink-soft:#6a7391}
+body{background:#f4f6fc;color:var(--color-ink)}
+:focus-visible{outline:2px solid var(--color-sky-600);outline-offset:2px}
