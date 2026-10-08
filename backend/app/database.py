@@ -8,7 +8,13 @@ def normalize(url: str) -> str:
         return "postgresql+psycopg2://" + url.split("://", 1)[1]
     return url
 
-URL = normalize(os.getenv("DATABASE_URL", "sqlite:///./smartbiz.db"))
+raw_url = (os.getenv("DATABASE_URL") or "").strip()
+if not raw_url or raw_url.startswith(("http://", "https://")):
+    if raw_url.startswith(("http://", "https://")):
+        print(f"[SmartBiz DB Warning] DATABASE_URL is set to an HTTP(S) URL ({raw_url}). SQLAlchemy requires a postgresql:// connection string. Falling back to local SQLite.")
+    URL = "sqlite:///./smartbiz.db"
+else:
+    URL = normalize(raw_url)
 sqlite = URL.startswith("sqlite")
 engine = create_engine(URL, pool_pre_ping=True, connect_args={"check_same_thread": False} if sqlite else {})
 if sqlite:  # make SQLite enforce foreign keys like PostgreSQL does
