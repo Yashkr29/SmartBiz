@@ -5,7 +5,7 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
 from .database import engine as main_engine, normalize
 
-MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+MODEL = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
 API_KEY = lambda: os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
 MAX_ROWS = 50
 # Optional: connect as the read-only `smartbiz_ai` role from supabase/schema.sql for database-level safety.
@@ -104,3 +104,4 @@ def ask(question: str, llm=None, eng=None) -> dict:
             sql = clean(_text(llm.invoke(msgs + [("ai", sql), ("human", f"That query failed: {err}. Return a corrected query only.")])))
     reply = llm.invoke([("system", ANSWER_PROMPT), ("human", f"Question: {question}\nRows: {json.dumps(rows, default=str)}")])
     return {"answer": _text(reply).strip(), "sql": sql, "rows": rows, "mode": "llm"}
+
