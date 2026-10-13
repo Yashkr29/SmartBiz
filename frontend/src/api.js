@@ -1,6 +1,9 @@
 import axios from 'axios'
 
-export const api = axios.create({baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api', timeout: 20000})
+let baseURL = (import.meta.env.VITE_API_URL || 'http://localhost:8000/api').trim().replace(/\/+$/, '')
+if (!baseURL.endsWith('/api')) baseURL = `${baseURL}/api`
+
+export const api = axios.create({baseURL, timeout: 20000})
 
 api.interceptors.request.use(c => {
   const t = localStorage.getItem('sb_token')
