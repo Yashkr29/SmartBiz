@@ -5,7 +5,7 @@ const features=[[ShoppingBag,'Order tracking','Move every order from New to Deli
 [Package,'Automatic stock','Stock drops when an order is created and you see low items early.'],
 [Wallet,'Payments','Advance, received and pending amounts for every order.'],
 [LayoutDashboard,'Live dashboard','Sales, expenses and estimated profit on one screen.'],
-[FileSpreadsheet,'Excel import','Bring in your old sheets and map the columns in a minute.'],
+[FileSpreadsheet,'CSV import','Bring in your old Excel sheets as CSV. Columns are matched for you.'],
 [Sparkles,'Ask in plain English','Ask who owes you the most and get the answer straight away.']]
 
 function Preview(){return(<div className="mx-auto max-w-3xl rounded-[28px] bg-white/40 backdrop-blur-md p-3 shadow-2xl shadow-ink/20">

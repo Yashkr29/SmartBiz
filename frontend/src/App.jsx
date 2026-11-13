@@ -1,4 +1,4 @@
-import {createContext,useContext,useState} from 'react'
+import {createContext,useContext,useEffect,useState} from 'react'
 import {Routes,Route,Navigate,NavLink,Outlet,useNavigate} from 'react-router-dom'
 import {LayoutDashboard,ShoppingBag,Users,Package,Truck,Receipt,Sparkles,LogOut} from 'lucide-react'
 import {api} from './api.js'
@@ -24,7 +24,7 @@ function Shell(){
       {nav.map(([to,label,Icon])=>(
         <NavLink key={to} to={to} end={to==='/app'} className={({isActive})=>`flex items-center gap-3 rounded-full px-4 py-2.5 text-sm font-semibold whitespace-nowrap ${isActive?'bg-sky-500 text-white':'text-ink-soft hover:bg-sky-50'}`}>
           <Icon size={18}/>{label}</NavLink>))}
-      <p className="hidden md:block md:mt-auto px-4 pb-1 text-xs text-ink-soft truncate">{user.name} · {user.role}</p>
+      <p className="hidden md:block md:mt-auto px-4 pb-1 text-xs text-ink-soft truncate" title={user.email}>{user.name}</p>
       <button onClick={()=>{logout();go('/login')}} className="flex items-center gap-3 rounded-full px-4 py-2.5 text-sm font-semibold text-ink-soft hover:bg-sky-50"><LogOut size={18}/>Log out</button>
     </aside>
     <main className="flex-1 p-5 md:p-8 max-w-6xl"><Outlet/></main></div>)
@@ -36,6 +36,8 @@ export default function App(){
   const login=async(email,password)=>save((await api.post('/auth/login',{email,password})).data)
   const register=async(name,email,password)=>save((await api.post('/auth/register',{name,email,password})).data)
   const logout=()=>{localStorage.removeItem('sb_token');localStorage.removeItem('sb_user');setUser(null)}
+  // refresh the saved profile once per visit (name/role may have changed on the server)
+  useEffect(()=>{if(localStorage.getItem('sb_token'))api.get('/auth/me').then(r=>{localStorage.setItem('sb_user',JSON.stringify(r.data));setUser(r.data)}).catch(()=>{})},[])
   return(<Auth.Provider value={{user,login,register,logout}}><Routes>
     <Route path="/login" element={user?<Navigate to="/app" replace/>:<Login/>}/>
     <Route path="/" element={<Landing/>}/>

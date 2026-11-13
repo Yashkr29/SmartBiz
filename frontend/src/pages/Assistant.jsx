@@ -14,7 +14,7 @@ export default function Assistant(){
     t=t.trim();if(!t||busy)return
     setMsgs(m=>[...m,{r:'me',t}]);setQ('');setBusy(true)
     let reply
-    try{const {data}=await api.post('/ai/ask',{question:t},{timeout:40000});reply={r:'ai',t:data.answer,sql:data.sql,rows:data.rows,src:data.mode}}
+    try{const {data}=await api.post('/ai/ask',{question:t},{timeout:120000});reply={r:'ai',t:data.answer,sql:data.sql,rows:data.rows,src:data.mode,note:data.note}}
     catch(e){reply={r:'ai',t:errMsg(e),src:'error'}}
     setMsgs(m=>[...m,reply]);setBusy(false)
   }
@@ -23,9 +23,11 @@ export default function Assistant(){
       {msgs.map((m,i)=>(<div key={i} className={`max-w-lg ${m.r==='me'?'self-end':'flex gap-2'}`}>
         {m.r==='ai'&&<span className="grid place-items-center size-8 shrink-0 rounded-full bg-sky-100 text-sky-600"><Sparkles size={16}/></span>}
         <div><p className={`rounded-3xl px-5 py-3 text-sm ${m.r==='me'?'bg-sky-500 text-white':'bg-sky-50'}`}>{m.t}</p>
-          {m.src&&<p className="mt-1 ml-2 text-[11px] text-ink-soft">{badge[m.src]}</p>}
+          {m.src&&<p className="mt-1 ml-2 text-[11px] text-ink-soft">{badge[m.src]}{m.note&&` · ${m.note}`}</p>}
           {m.sql&&<details className="mt-1 ml-2 text-xs text-ink-soft"><summary className="cursor-pointer font-semibold">Show how I found this</summary>
-            <pre className="mt-1 whitespace-pre-wrap rounded-2xl bg-sky-50 p-3">{m.sql}</pre></details>}</div></div>))}
+            <pre className="mt-1 whitespace-pre-wrap rounded-2xl bg-sky-50 p-3">{m.sql}</pre>
+            {m.rows?.length>0&&<div className="mt-1 overflow-x-auto rounded-2xl bg-sky-50 p-2"><table className="text-[11px]"><thead><tr>{Object.keys(m.rows[0]).map(k=><th key={k} className="px-2 py-1 text-left">{k}</th>)}</tr></thead>
+              <tbody>{m.rows.slice(0,10).map((r,j)=><tr key={j}>{Object.values(r).map((v,k)=><td key={k} className="px-2 py-1">{String(v??'')}</td>)}</tr>)}</tbody></table></div>}</details>}</div></div>))}
       {busy&&<div className="flex gap-1.5 ml-10" aria-label="Thinking">{[0,1,2].map(i=><span key={i} className="size-2 rounded-full bg-sky-400 animate-pulse" style={{animationDelay:`${i*150}ms`}}/>)}</div>}
       <div ref={end}/></div>
     <div className="flex flex-wrap gap-2">{chips.map(s=><button key={s} onClick={()=>send(s)} disabled={busy} className="rounded-full bg-sky-100 hover:bg-sky-200 disabled:opacity-50 px-4 py-1.5 text-xs font-semibold">{s}</button>)}</div>

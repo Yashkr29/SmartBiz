@@ -26,14 +26,13 @@ export default function Login(){
       <div className="text-xl font-extrabold">Smart<span className="text-sky-600">Biz</span></div>
       <form onSubmit={submit} className="m-auto w-full max-w-sm space-y-5">
         <div className="flex gap-8 text-lg font-bold" role="tablist">
-          {['login','signup'].map(t=>(<button type="button" key={t} role="tab" aria-selected={tab===t} onClick={()=>setTab(t)}
+          {['login','signup'].map(t=>(<button type="button" key={t} role="tab" aria-selected={tab===t} onClick={()=>{setTab(t);setErr('')}}
             className={`pb-1 border-b-2 ${tab===t?'border-sky-400':'border-transparent text-sky-200'}`}>{t==='login'?'Login':'Sign up'}</button>))}</div>
         {tab==='signup'&&<Field icon={User} placeholder="Business owner name" value={f.name} onChange={set('name')}/>}
         <Field icon={Mail} type="email" placeholder="Email address" value={f.email} onChange={set('email')}/>
         <Field icon={Lock} type="password" minLength={6} placeholder="Password (min 6 characters)" value={f.password} onChange={set('password')}/>
-        <div className="flex items-center justify-between">
-          <a href="#" className="text-xs text-ink-soft hover:underline">Forgot your password?</a>
-          <button disabled={busy} className="disabled:opacity-60 rounded-full bg-sky-500 hover:bg-sky-600 text-white font-semibold px-10 py-2.5 shadow-lg shadow-sky-400/40">{tab==='login'?'Login':'Create account'}</button></div>
+        <div className="flex items-center justify-end">
+          <button disabled={busy} aria-busy={busy} className="disabled:opacity-60 rounded-full bg-sky-500 hover:bg-sky-600 text-white font-semibold px-10 py-2.5 shadow-lg shadow-sky-400/40">{busy?'Please wait…':tab==='login'?'Login':'Create account'}</button></div>
         {err&&<p role="alert" className="text-sm text-rose-600">{err}</p>}
       </form></section>
     <section className="relative hidden lg:grid place-items-center">

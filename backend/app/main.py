@@ -1,12 +1,15 @@
-import os
+import logging, os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .database import Base, engine
-from .routers import auth, crud, orders, insights
+from .upgrade import upgrade
+from .routers import auth, crud, orders, insights, imports
 
+logging.basicConfig(level=logging.INFO)
 Base.metadata.create_all(engine)  # use Alembic migrations once the schema settles
+upgrade(engine)
 
-app = FastAPI(title="SmartBiz API", version="0.1.0")
+app = FastAPI(title="SmartBiz API", version="0.2.0")
 raw_origins = [o.strip() for o in os.getenv("CORS_ORIGINS", "").split(",") if o.strip()]
 if not raw_origins or "*" in raw_origins:
     origins = ["*"]
@@ -22,7 +25,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-for r in (auth.router, crud.customers, crud.suppliers, crud.products, crud.expenses, orders.router, insights.router):
+for r in (auth.router, crud.customers, crud.suppliers, crud.products, crud.expenses, orders.router,
+          insights.router, imports.router):
     app.include_router(r, prefix="/api")
 
 @app.get("/api/health")
